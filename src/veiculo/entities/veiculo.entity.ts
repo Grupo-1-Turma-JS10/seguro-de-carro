@@ -1,5 +1,5 @@
 import { IsNotEmpty } from "class-validator";
-import { Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Contrato } from "../../contrato/entities/contrato.entity";
 
 @Entity({ name: 'tb_veiculos' })
@@ -35,8 +35,16 @@ export class Veiculo {
     @Column({ type: 'decimal', precision: 10, scale: 2 })
     valor_fipe: number;
 
-    @ManyToOne(() => Contrato, contrato => contrato.veiculos, { 
-        onDelete: 'CASCADE' 
+    @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    @Column()
+    data_criacao: Date;
+
+    @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
+    @Column()
+    data_atualizacao: Date;
+
+    @ManyToOne(() => Contrato, contrato => contrato.veiculos, {
+        onDelete: 'CASCADE'
     })
     contrato: Contrato;
 }
