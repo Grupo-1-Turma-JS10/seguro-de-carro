@@ -1,12 +1,12 @@
-import { Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
+import { Injectable, InternalServerErrorException, Logger, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { DeleteResult, Repository } from "typeorm";
 import { Contrato } from "../entities/contrato.entity";
 
 
 @Injectable()
 export class ContratoService {
-   
+
     private readonly logger = new Logger(ContratoService.name);
     constructor(
         @InjectRepository(Contrato)
@@ -17,7 +17,7 @@ export class ContratoService {
         return this.contratoRepository.save(contrato);
     }
 
-    
+
     async getContratosById(id: number): Promise<Contrato> {
         this.logger.log(`Buscando contrato com ID: ${id}`);
 
@@ -50,20 +50,37 @@ export class ContratoService {
         }
     }
 
-    async findAll(): Promise<Contrato[]> {
-        let contratos: Contrato[] = [];
+    async findAll(): Promise<Contrato[]> {
+        let contratos: Contrato[] = [];
 
-        try {
-            contratos = await this.contratoRepository.find();
-        } catch (error) {
-            console.error('Error fetching contracts:', error.message);
-            throw new InternalServerErrorException('Error fetching contracts.');
-        }
+        try {
+            contratos = await this.contratoRepository.find();
+        } catch (error) {
+            console.error('Error fetching contracts:', error.message);
+            throw new InternalServerErrorException('Error fetching contracts.');
+        }
 
-        if (contratos.length === 0) {
-            console.log('No contracts found.');
-        }
+        if (contratos.length === 0) {
+            console.log('No contracts found.');
+        }
 
-        return contratos;
-    }
+        return contratos;
+    }
+
+    async delete(id: number): Promise<DeleteResult> {
+        console.log(`Contrato com ID ${id}, excluido.`)
+
+        try {
+            const contrato = await this.contratoRepository.findOne({where: {id}})
+            const result = await this.contratoRepository.delete(id)
+
+            return result;
+        } catch (error) {
+            if (error instanceof NotFoundException) {
+                throw error;
+            }
+            console.error(`Erro ao excluir contrato com ID ${id}: ${error.message}.`)
+            throw new InternalServerErrorException('Erro ao excluir contrato.');
+        }
+    }
 }
