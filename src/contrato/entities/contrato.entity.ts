@@ -1,5 +1,6 @@
 import { IsNotEmpty } from "class-validator";
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Veiculo } from "../../veiculo/entities/veiculo.entity";
 
 @Entity({ name: 'tb_contratos' })
 export class Contrato {
@@ -55,4 +56,7 @@ export class Contrato {
 
     @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
     data_atualizacao: Date;
+
+    @OneToMany(() => Veiculo, veiculo => veiculo.id)
+    veiculos: Veiculo[];
 }
