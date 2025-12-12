@@ -1,42 +1,30 @@
-import { IsNotEmpty } from "class-validator";
-import { Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "typeorm";
 import { Contrato } from "../../contrato/entities/contrato.entity";
 
-@Entity({ name: 'tb_veiculos' })
+@Entity({ name: "tb_veiculos" })
 export class Veiculo {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @IsNotEmpty()
-    @Column({ type: 'varchar', length: 50 })
-    marca: string;
+  @Column()
+  marca: string;
 
-    @IsNotEmpty()
-    @Column({ type: 'varchar', length: 50 })
-    modelo: string;
+  @Column()
+  modelo: string;
 
-    @IsNotEmpty()
-    @Column({ type: 'smallint', width: 4 })
-    ano: number;
+  @Column()
+  ano: number;
 
-    @IsNotEmpty()
-    @Column({ type: 'varchar', length: 20 })
-    placa: string;
+  @Column()
+  placa: string;
 
-    @IsNotEmpty()
-    @Column({ type: 'varchar', length: 17 })
-    chassi: string;
+  @Column("decimal", { precision: 10, scale: 2 })
+  valor_fipe: number;
 
-    @IsNotEmpty()
-    @Column({ type: 'varchar', length: 30 })
-    cor: string;
+  @Column({ type: "date", nullable: true })
+  data_fabricacao: Date;
 
-    @IsNotEmpty()
-    @Column({ type: 'decimal', precision: 10, scale: 2 })
-    valor_fipe: number;
-
-    @ManyToOne(() => Contrato, contrato => contrato.id, { 
-        onDelete: 'CASCADE' 
-    })
-    contrato: Contrato;
+  @ManyToOne(() => Contrato, contrato => contrato.veiculos, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "contratoId" })
+  contrato: Contrato;
 }

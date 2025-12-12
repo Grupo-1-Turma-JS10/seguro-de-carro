@@ -1,62 +1,51 @@
-import { IsNotEmpty } from "class-validator";
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn, UpdateDateColumn } from "typeorm";
 import { Veiculo } from "../../veiculo/entities/veiculo.entity";
 
-@Entity({ name: 'tb_contratos' })
+@Entity({ name: "tb_contratos" })
 export class Contrato {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @IsNotEmpty()
-    @Column({ type: 'varchar', length: 100 })
-    nome: string;
+  @Column()
+  nome: string;
 
-    @IsNotEmpty()
-    @Column({ type: 'varchar', length: 14 })
-    cpf_cnpj: string;
+  @Column()
+  cpf_cnpj: string;
 
-    @IsNotEmpty()
-    @Column({ type: 'date' })
-    data_nascimento: Date;
+  @Column({ type: "date" })
+  data_nascimento: Date;
 
-    @IsNotEmpty()
-    @Column({ type: 'varchar', length: 200 })
-    endereco: string;
+  @Column()
+  endereco: string;
 
-    @IsNotEmpty()
-    @Column({ type: 'varchar', length: 100 })
-    email: string;
+  @Column()
+  email: string;
 
-    @IsNotEmpty()
-    @Column({ type: 'varchar', length: 20 })
-    telefone: string;
+  @Column()
+  telefone: string;
 
-    @IsNotEmpty()
-    @Column({ type: 'timestamp' })
-    data_inicio: Date;
+  @Column({ type: "date" })
+  data_inicio: Date;
 
-    @IsNotEmpty()
-    @Column({ type: 'timestamp' })
-    data_fim: Date;
+  @Column({ type: "date" })
+  data_fim: Date;
 
-    @IsNotEmpty()
-    @Column({ type: 'decimal', precision: 10, scale: 2 })
-    valor: number;
+  @Column("decimal", { precision: 10, scale: 2 })
+  valor: number;
 
-    @IsNotEmpty()
-    @Column({ type: 'varchar', length: 50 })
-    status: string;
+  @Column()
+  status: string;
 
-    @IsNotEmpty()
-    @Column({ type: 'text' })
-    cobertura: string;
+  @Column()
+  cobertura: string;
 
-    @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-    data_criacao: Date;
+  @OneToMany(() => Veiculo, veiculo => veiculo.contrato, { cascade: true, eager: true })
+  veiculos: Veiculo[];
 
-    @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
-    data_atualizacao: Date;
+  @CreateDateColumn()
+  data_criacao: Date;
 
-    @OneToMany(() => Veiculo, veiculo => veiculo.id)
-    veiculos: Veiculo[];
+  @UpdateDateColumn()
+  data_atualizacao: Date;
 }
+
