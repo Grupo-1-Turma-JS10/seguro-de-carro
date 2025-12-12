@@ -35,7 +35,7 @@ export class Veiculo {
     @Column({ type: 'decimal', precision: 10, scale: 2 })
     valor_fipe: number;
 
-    @ManyToOne(() => Contrato, contrato => contrato.id, { 
+    @ManyToOne(() => Contrato, contrato => contrato.veiculos, { 
         onDelete: 'CASCADE' 
     })
     contrato: Contrato;
