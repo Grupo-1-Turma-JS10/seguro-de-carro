@@ -1,17 +1,23 @@
 import { Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Contrato } from "../entities/contrato.entity";
 import { Repository } from "typeorm";
+import { Contrato } from "../entities/contrato.entity";
+
 
 @Injectable()
 export class ContratoService {
+   
     private readonly logger = new Logger(ContratoService.name);
-
     constructor(
         @InjectRepository(Contrato)
         private contratoRepository: Repository<Contrato>
     ) { }
 
+    async createContrato(contrato: Contrato): Promise<Contrato> {
+        return this.contratoRepository.save(contrato);
+    }
+
+    
     async getContratosById(id: number): Promise<Contrato> {
         this.logger.log(`Buscando contrato com ID: ${id}`);
 
