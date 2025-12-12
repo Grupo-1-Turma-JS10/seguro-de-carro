@@ -48,7 +48,7 @@ export class ContratoController {
     return this.contratoService.update(contrato);
   }
 
-  @Delete('/id')
+  @Delete('/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async delete(@Param('id', ParseIntPipe) id: number) {
     await this.contratoService.delete(id);
