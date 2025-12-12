@@ -2,38 +2,34 @@ import { IsNotEmpty } from "class-validator";
 import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Contrato } from "../../contrato/entities/contrato.entity";
 
-@Entity({ name: 'tb_veiculos' })
+@Entity({ name: "tb_veiculos" })
 export class Veiculo {
     @PrimaryGeneratedColumn()
     id: number;
 
     @IsNotEmpty()
-    @Column({ type: 'varchar', length: 50 })
+    @Column()
     marca: string;
 
     @IsNotEmpty()
-    @Column({ type: 'varchar', length: 50 })
+    @Column()
     modelo: string;
 
     @IsNotEmpty()
-    @Column({ type: 'smallint', width: 4 })
+    @Column()
     ano: number;
 
     @IsNotEmpty()
-    @Column({ type: 'varchar', length: 20 })
+    @Column()
     placa: string;
 
     @IsNotEmpty()
-    @Column({ type: 'varchar', length: 17 })
-    chassi: string;
-
-    @IsNotEmpty()
-    @Column({ type: 'varchar', length: 30 })
-    cor: string;
-
-    @IsNotEmpty()
-    @Column({ type: 'decimal', precision: 10, scale: 2 })
+    @Column("decimal", { precision: 10, scale: 2 })
     valor_fipe: number;
+
+    @IsNotEmpty()
+    @Column({ type: "date", nullable: true })
+    data_fabricacao: Date;
 
     @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     @Column()

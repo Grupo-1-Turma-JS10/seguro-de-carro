@@ -1,64 +1,63 @@
-import { IsNotEmpty } from "class-validator";
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn, UpdateDateColumn } from "typeorm";
 import { Veiculo } from "../../veiculo/entities/veiculo.entity";
+import { IsNotEmpty } from "class-validator";
 
-@Entity({ name: 'tb_contratos' })
+@Entity({ name: "tb_contratos" })
 export class Contrato {
     @PrimaryGeneratedColumn()
     id: number;
 
     @IsNotEmpty()
-    @Column({ type: 'varchar', length: 100 })
+    @Column()
     nome: string;
 
     @IsNotEmpty()
-    @Column({ type: 'varchar', length: 14 })
+    @Column()
     cpf_cnpj: string;
 
     @IsNotEmpty()
-    @Column({ type: 'date' })
+    @Column({ type: "date" })
     data_nascimento: Date;
 
     @IsNotEmpty()
-    @Column({ type: 'varchar', length: 200 })
+    @Column()
     endereco: string;
 
     @IsNotEmpty()
-    @Column({ type: 'varchar', length: 100 })
+    @Column()
     email: string;
 
     @IsNotEmpty()
-    @Column({ type: 'varchar', length: 20 })
+    @Column()
     telefone: string;
 
     @IsNotEmpty()
-    @Column({ type: 'timestamp' })
+    @Column({ type: "date" })
     data_inicio: Date;
 
     @IsNotEmpty()
-    @Column({ type: 'timestamp' })
+    @Column({ type: "date" })
     data_fim: Date;
 
     @IsNotEmpty()
-    @Column({ type: 'decimal', precision: 10, scale: 2 })
+    @Column("decimal", { precision: 10, scale: 2 })
     valor: number;
 
     @IsNotEmpty()
-    @Column({ type: 'varchar', length: 50 })
+    @Column()
     status: string;
 
     @IsNotEmpty()
-    @Column({ type: 'text' })
+    @Column()
     cobertura: string;
-
-    @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-    @Column()
-    data_criacao: Date;
-
-    @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
-    @Column()
-    data_atualizacao: Date;
 
     @OneToMany(() => Veiculo, veiculo => veiculo.contrato)
     veiculos: Veiculo[];
+
+    @CreateDateColumn()
+    data_criacao: Date;
+
+    @UpdateDateColumn()
+    data_atualizacao: Date;
 }
+
