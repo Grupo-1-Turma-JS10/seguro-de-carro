@@ -1,51 +1,63 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn, UpdateDateColumn } from "typeorm";
 import { Veiculo } from "../../veiculo/entities/veiculo.entity";
+import { IsNotEmpty } from "class-validator";
 
 @Entity({ name: "tb_contratos" })
 export class Contrato {
-  @PrimaryGeneratedColumn()
-  id: number;
+    @PrimaryGeneratedColumn()
+    id: number;
 
-  @Column()
-  nome: string;
+    @IsNotEmpty()
+    @Column()
+    nome: string;
 
-  @Column()
-  cpf_cnpj: string;
+    @IsNotEmpty()
+    @Column()
+    cpf_cnpj: string;
 
-  @Column({ type: "date" })
-  data_nascimento: Date;
+    @IsNotEmpty()
+    @Column({ type: "date" })
+    data_nascimento: Date;
 
-  @Column()
-  endereco: string;
+    @IsNotEmpty()
+    @Column()
+    endereco: string;
 
-  @Column()
-  email: string;
+    @IsNotEmpty()
+    @Column()
+    email: string;
 
-  @Column()
-  telefone: string;
+    @IsNotEmpty()
+    @Column()
+    telefone: string;
 
-  @Column({ type: "date" })
-  data_inicio: Date;
+    @IsNotEmpty()
+    @Column({ type: "date" })
+    data_inicio: Date;
 
-  @Column({ type: "date" })
-  data_fim: Date;
+    @IsNotEmpty()
+    @Column({ type: "date" })
+    data_fim: Date;
 
-  @Column("decimal", { precision: 10, scale: 2 })
-  valor: number;
+    @IsNotEmpty()
+    @Column("decimal", { precision: 10, scale: 2 })
+    valor: number;
 
-  @Column()
-  status: string;
+    @IsNotEmpty()
+    @Column()
+    status: string;
 
-  @Column()
-  cobertura: string;
+    @IsNotEmpty()
+    @Column()
+    cobertura: string;
 
-  @OneToMany(() => Veiculo, veiculo => veiculo.contrato, { cascade: true, eager: true })
-  veiculos: Veiculo[];
+    @OneToMany(() => Veiculo, veiculo => veiculo.contrato)
+    veiculos: Veiculo[];
 
-  @CreateDateColumn()
-  data_criacao: Date;
+    @CreateDateColumn()
+    data_criacao: Date;
 
-  @UpdateDateColumn()
-  data_atualizacao: Date;
+    @UpdateDateColumn()
+    data_atualizacao: Date;
 }
 
