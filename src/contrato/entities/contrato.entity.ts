@@ -57,6 +57,6 @@ export class Contrato {
     @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
     data_atualizacao: Date;
 
-    @OneToMany(() => Veiculo, veiculo => veiculo.id)
+    @OneToMany(() => Veiculo, veiculo => veiculo.contrato)
     veiculos: Veiculo[];
 }
