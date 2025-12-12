@@ -34,10 +34,10 @@ export class Contrato {
     telefone: string;
 
     @IsNotEmpty({ message: "A data de início não pode estar vazia." })
-    @Column({ type: "date", nullable: false })
+    @Column({ type: "timestamp", nullable: false })
     data_inicio: Date;
 
-    @Column({ type: "date", nullable: false })
+    @Column({ type: "timestamp", nullable: false })
     data_fim: Date;
     
     @IsNotEmpty({ message: "O valor não pode estar vazio." })
@@ -52,15 +52,14 @@ export class Contrato {
     cobertura: string;
 
     @CreateDateColumn()
-    @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
+    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     data_criacao: Date;
 
     @UpdateDateColumn()
-    @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP", onUpdate: "CURRENT_TIMESTAMP" })
+    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
     data_atualizacao: Date;
 
     @OneToMany(() => Veiculo, veiculo => veiculo.contrato)
     veiculos: Veiculo[];
-
 }
 

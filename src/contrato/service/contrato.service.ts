@@ -1,4 +1,6 @@
 import {
+    HttpException,
+  HttpStatus,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -77,7 +79,7 @@ export class ContratoService {
   }
 
   async update(contrato: Contrato): Promise<Contrato> {
-    let buscaContrato = await this.findById(contrato.id);
+    let buscaContrato = await this.getContratosById(contrato.id);
 
     if (!buscaContrato || !contrato.id)
       throw new HttpException('Contrato não encontrado!', HttpStatus.NOT_FOUND);
