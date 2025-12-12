@@ -1,4 +1,6 @@
 import {
+  HttpException,
+  HttpStatus,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -60,7 +62,7 @@ export class VeiculoService {
   }
 
   async update(veiculo: Veiculo): Promise<Veiculo> {
-    let buscaVeiculo = await this.findById(veiculo.id);
+    let buscaVeiculo = await this.veiculoRepository.findOne({ where: { id: veiculo.id } });
 
     if (!buscaVeiculo || !veiculo.id)
       throw new HttpException('Veículo não encontrado!', HttpStatus.NOT_FOUND);
