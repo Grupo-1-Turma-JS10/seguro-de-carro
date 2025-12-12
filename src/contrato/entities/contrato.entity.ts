@@ -52,9 +52,11 @@ export class Contrato {
     cobertura: string;
 
     @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    @Column()
     data_criacao: Date;
 
     @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
+    @Column()
     data_atualizacao: Date;
 
     @OneToMany(() => Veiculo, veiculo => veiculo.contrato)
