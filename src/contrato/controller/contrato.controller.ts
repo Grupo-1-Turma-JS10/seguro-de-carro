@@ -1,11 +1,22 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post } from "@nestjs/common";
-import { ContratoService } from "../service/contrato.service";
-import { Contrato } from "../entities/contrato.entity";
-import { plainToInstance } from "class-transformer";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+} from '@nestjs/common';
+import { ContratoService } from '../service/contrato.service';
+import { Contrato } from '../entities/contrato.entity';
+import { plainToInstance } from 'class-transformer';
 
-@Controller("/contrato")
+@Controller('/contrato')
 export class ContratoController {
-  constructor(private readonly contratoService: ContratoService) { }
+  constructor(private readonly contratoService: ContratoService) {}
 
   @Post()
   async create(@Body() contrato: Contrato) {
@@ -19,7 +30,9 @@ export class ContratoController {
   }
 
   @Get('/documento/:documento')
-  getContratosByDocumento(@Param('documento') documento: string): Promise<Contrato> {
+  getContratosByDocumento(
+    @Param('documento') documento: string,
+  ): Promise<Contrato> {
     return this.contratoService.getContratosByDocumento(documento);
   }
 
@@ -29,12 +42,15 @@ export class ContratoController {
     return this.contratoService.findAll();
   }
 
+  @Put()
+  @HttpCode(HttpStatus.OK)
+  update(@Body() contrato: Contrato): Promise<Contrato> {
+    return this.contratoService.update(contrato);
+  }
+
   @Delete('/id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async delete(@Param('id', ParseIntPipe)id:number) {
-  await this.contratoService.delete(id);
-  } 
-   
+  async delete(@Param('id', ParseIntPipe) id: number) {
+    await this.contratoService.delete(id);
+  }
 }
-
-
