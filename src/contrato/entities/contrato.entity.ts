@@ -15,6 +15,22 @@ export class Contrato {
     cpf_cnpj: string;
 
     @IsNotEmpty()
+    @Column({ type: 'date' })
+    data_nascimento: Date;
+
+    @IsNotEmpty()
+    @Column({ type: 'varchar', length: 200 })
+    endereco: string;
+
+    @IsNotEmpty()
+    @Column({ type: 'varchar', length: 100 })
+    email: string;
+
+    @IsNotEmpty()
+    @Column({ type: 'varchar', length: 20 })
+    telefone: string;
+
+    @IsNotEmpty()
     @Column({ type: 'timestamp' })
     data_inicio: Date;
 
