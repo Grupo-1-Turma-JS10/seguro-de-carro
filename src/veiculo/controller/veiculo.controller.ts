@@ -39,7 +39,7 @@ export class VeiculoController {
     return this.veiculoService.update(veiculo);
   }
 
-  @Delete('/id')
+  @Delete('/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async delete(@Param('id', ParseIntPipe) id: number) {
     await this.veiculoService.delete(id);
