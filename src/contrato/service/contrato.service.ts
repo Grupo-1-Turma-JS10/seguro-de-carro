@@ -49,4 +49,21 @@ export class ContratoService {
             throw new InternalServerErrorException('Erro ao buscar contrato pelo documento.');
         }
     }
+
+    async findAll(): Promise<Contrato[]> {
+        let contratos: Contrato[] = [];
+
+        try {
+            contratos = await this.contratoRepository.find();
+        } catch (error) {
+            console.error('Error fetching contracts:', error.message);
+            throw new InternalServerErrorException('Error fetching contracts.');
+        }
+
+        if (contratos.length === 0) {
+            console.log('No contracts found.');
+        }
+
+        return contratos;
+    }
 }

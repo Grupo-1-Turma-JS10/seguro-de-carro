@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post } from "@nestjs/common";
 import { ContratoService } from "../service/contrato.service";
 import { Contrato } from "../entities/contrato.entity";
 import { plainToInstance } from "class-transformer";
@@ -24,4 +24,12 @@ export class ContratoController {
     getContratosByDocumento(@Param('documento') documento: string): Promise<Contrato> {
         return this.contratoService.getContratosByDocumento(documento);
     }
+
+
+    @Get() 
+    @HttpCode(HttpStatus.OK) 
+    findAll(): Promise<Contrato[]> {
+        return this.contratoService.findAll();
+    }
 }
+
