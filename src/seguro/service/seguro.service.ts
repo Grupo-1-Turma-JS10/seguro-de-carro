@@ -14,10 +14,14 @@ import { VeiculoService } from '../../veiculo/service/veiculo.service';
 @Injectable()
 export class SeguroService {
   private readonly DESCONTO_PERCENTUAL = 20;
-  private readonly VALOR_SEGURO = {
-    'basico': 2000,
-    'intermediario': 3500,
-    'completo': 5000,
+  private readonly VALOR_SEGURO_POR_COBERTURA = {
+    'basica': 2000,
+    'intermediaria': 3500,
+    'completa': 5000,
+  }
+  private readonly status = {
+    'ativo': 'ativo',
+    'inativo': 'inativo',
   }
   private readonly logger = new Logger(SeguroService.name);
 
@@ -31,7 +35,7 @@ export class SeguroService {
     this.logger.log(`Creating seguro.`);
     this.validarSeguro(seguro);
 
-    let seguroSalvo: Seguro;
+    let seguroSalvo: Seguro = seguro;
 
     try {
       // Verificar se já existe seguro ativo para o mesmo veículo
@@ -39,20 +43,20 @@ export class SeguroService {
         where: {
           veiculo:
             { id: seguro.veiculo.id },
-          status: 'Ativo'
+          status: this.status.ativo
         },
       });
 
       if (seguroAtivo) {
         this.logger.log(`Desativando seguro anterior ID: ${seguroAtivo.id}`);
-        seguroAtivo.status = 'Inativo';
+        seguroAtivo.status = this.status.inativo;
         await this.seguroRepository.save(seguroAtivo);
       }
 
       // Criar novo seguro ativo
-      seguro.status = 'Ativo';
+      seguroSalvo.status = this.status.ativo;
       seguroSalvo = await this.seguroRepository.save(
-        await this.calcularValorSeguro(seguro, seguro.veiculo.id, this.DESCONTO_PERCENTUAL)
+        await this.calcularValorSeguro(seguroSalvo, seguro.veiculo.id, this.DESCONTO_PERCENTUAL)
       );
       this.logger.log(`Seguro criado com ID: ${seguroSalvo.id}`);
       return seguroSalvo;
@@ -224,7 +228,7 @@ export class SeguroService {
     // Determina o valor base do seguro
     if (!seguro.valor) {
       this.logger.log(`Calculando valor do seguro base para cobertura: ${seguro.cobertura}`);
-      seguro.valor = this.VALOR_SEGURO[seguro.cobertura.toLowerCase()] || 2000;
+      seguro.valor = this.VALOR_SEGURO_POR_COBERTURA[seguro.cobertura.toLowerCase()] || 2000;
     }
 
     // Aplica desconto se o veículo tiver mais de 10 anos
