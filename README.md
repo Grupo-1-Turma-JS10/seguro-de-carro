@@ -1,98 +1,204 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Seguro de Carro
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Seguro de Carro é uma API REST modular para gerenciar veículos e apólices de seguro. Foi desenvolvida com foco em:
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+- operações CRUD para Veículos e Seguros;
+- regras de negócio: 
+  - desconto automático de 20% para veículos com mais de 10 anos; 
+  - cálculo de valor do seguro baseado na cobertura escolhida, sendo `básica: (R$ 2.000)`, `intermediária: (R$ 3.500)` ou `completa: (R$ 5.000)`;
+  - seguro só pode ser criado para maiores de 18 anos;
+- validação de entrada com feedback claro ao cliente e com tratamento de erros adequado;
+- arquitetura modular (módulos separados por responsabilidade) para facilitar manutenção e testes futuramente.
 
-## Description
+A implementação usa NestJS como framework, TypeORM para persistência e MySQL como banco de dados. O projeto serve como base para um sistema de seguros com exemplos práticos de integração entre entidades (Veículo ↔ Seguro) e tratamento de erros/validações.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Conteúdo
+- `src/veiculo` — entidade, controller e serviço para veículos
+- `src/seguro` — entidade, controller e serviço para seguros
 
-## Project setup
+## Tecnologias utilizadas
 
-```bash
-$ npm install
+O projeto utiliza as seguintes tecnologias e bibliotecas principais:
+
+![NestJS](https://img.shields.io/badge/NestJS-%23E0234E.svg?style=for-the-badge&logo=nestjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-%231572B6.svg?style=for-the-badge&logo=typescript&logoColor=white)
+![TypeORM](https://img.shields.io/badge/TypeORM-000000.svg?style=for-the-badge&logo=typeorm&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-%2300f.svg?style=for-the-badge&logo=mysql&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-%23339933.svg?style=for-the-badge&logo=node.js&logoColor=white)
+
+- 🏗️ NestJS — framework Node.js para construir APIs escaláveis e testáveis
+- ⚙️ TypeScript — tipagem estática para JavaScript
+- 🗄️ TypeORM — ORM para mapeamento objeto-relacional
+- 🐬 MySQL (mysql2) — banco de dados relacional
+- 🔒 class-validator / class-transformer — validação e transformação de DTOs
+- 🌿 dotenv / @nestjs/config — carregamento de variáveis de ambiente
+
+
+## Pré-requisitos
+- Node.js (recomendo 18+)
+- npm
+- MySQL (ou compatível) configurado e acessível
+
+## Variáveis de ambiente
+Crie um arquivo `.env` na raiz (não é commitado). As variáveis mais importantes usadas pelo projeto são:
+
+```
+DB_TYPE=mysql
+DB_HOST=localhost
+DB_PORT=3306
+DB_USERNAME=root
+DB_PASSWORD=secret
+DB_DATABASE=seguro_de_carro
+NODE_ENV=development
+PORT=3000
 ```
 
-## Compile and run the project
+> O projeto carrega variáveis com `@nestjs/config` — veja `src/app.module.ts` para detalhes.
+
+## Instalação
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm install
 ```
 
-## Run tests
+## Criar banco (script)
+Há um script utilitário em `scripts/create-db.mjs` que usa as variáveis de ambiente para criar o banco (útil em dev):
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm run create-db
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Rodar em modo desenvolvimento
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npm run start:dev
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## Endpoints principais
 
-## Resources
+As rotas seguem o padrão REST definidas nos controllers em `src/*/controller`.
 
-Check out a few resources that may come in handy when working with NestJS:
+- POST /veiculo — cria um veículo
+- GET /veiculo — lista veículos
+- GET /veiculo/:id — busca veículo por id
+- PUT /veiculo — atualiza veículo
+- DELETE /veiculo/:id — remove veículo
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+- POST /seguro — cria um seguro (associa a um veículo existente)
+- GET /seguro — lista seguros
+- GET /seguro/:id — busca seguro por id
+- PUT /seguro — atualiza seguro
+- DELETE /seguro/:id — remove seguro
 
-## Support
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Exemplos curl
 
-## Stay in touch
+Exemplos rápidos de como testar os endpoints usando `curl`. Substitua `localhost:3000` e `id` conforme seu ambiente.
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### Veículo
 
-## License
+- Criar veículo
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+```bash
+curl -X POST http://localhost:3000/veiculo \
+	-H "Content-Type: application/json" \
+	-d '{
+		"nome": "João da Silva",
+		"cpf_cnpj": "12345678901",
+		"data_nascimento": "1985-07-20",
+		"endereco": "Rua das Flores, 123, São Paulo, SP",
+		"email": "joao.silva@example.com",
+		"telefone": "+5511999999999",
+		"marca": "Volkswagen",
+		"modelo": "Gol",
+		"ano": 2018,
+		"placa": "ABC1D23"
+	}'
+```
+
+- Listar veículos
+
+```bash
+curl http://localhost:3000/veiculo
+```
+
+- Buscar veículo por id
+
+```bash
+curl http://localhost:3000/veiculo/1
+```
+
+- Atualizar veículo
+
+```bash
+curl -X PUT http://localhost:3000/veiculo \
+	-H "Content-Type: application/json" \
+	-d '{
+		"id": 1,
+		"marca": "Volkswagen",
+		"modelo": "Gol",
+		"ano": 2019,
+		"placa": "ABC1D23"
+	}'
+```
+
+- Deletar veículo
+
+```bash
+curl -X DELETE http://localhost:3000/veiculo/1
+```
+
+### Seguro
+
+- Criar seguro (associando a um veículo existente)
+
+```bash
+curl -X POST http://localhost:3000/seguro \
+	-H "Content-Type: application/json" \
+	-d '{
+		"valor": 0,
+		"desconto": 0,
+		"status": "ativo",
+		"cobertura": "completo",
+		"veiculo": { "id": 1 }
+	}'
+```
+> Observação: o `SeguroService` calcula `valor` e `desconto` automaticamente quando `valor` é enviado como `0` ou omitido, desde que `veiculo.id` e `cobertura` sejam válidos.
+
+- Listar seguros
+
+```bash
+curl http://localhost:3000/seguro
+```
+
+- Buscar seguro por id
+
+```bash
+curl http://localhost:3000/seguro/1
+```
+
+- Atualizar seguro
+
+```bash
+curl -X PUT http://localhost:3000/seguro \
+	-H "Content-Type: application/json" \
+	-d '{
+		"id": 1,
+		"valor": 3000.00,
+		"desconto": 0.00,
+		"status": "ativo",
+		"cobertura": "completo",
+		"veiculo": { "id": 1 }
+	}'
+```
+
+- Deletar seguro
+
+```bash
+curl -X DELETE http://localhost:3000/seguro/1
+```
+
+## Contato
+- Mantenha este README atualizado com instruções do seu ambiente local (variáveis de ambiente, versão do MySQL etc.).
+
+
