@@ -9,14 +9,18 @@ import {
   ParseIntPipe,
   Post,
   Put,
-  Query,
 } from '@nestjs/common';
 import { VeiculoService } from '../service/veiculo.service';
 import { Veiculo } from '../entities/veiculo.entity';
 
 @Controller('/veiculo')
 export class VeiculoController {
-  constructor(private readonly veiculoService: VeiculoService) {}
+  constructor(private readonly veiculoService: VeiculoService) { }
+
+  @Post()
+  async create(@Body() veiculo: Veiculo): Promise<Veiculo> {
+    return this.veiculoService.createVeiculo(veiculo);
+  }
 
   @Get()
   @HttpCode(HttpStatus.OK)
@@ -24,13 +28,14 @@ export class VeiculoController {
     return this.veiculoService.findAll();
   }
 
-  @Post()
-  async create(
-    @Body() veiculo: Veiculo,
-    @Query('contratoId') contratoId: string,
-  ) {
-    const id = Number(contratoId);
-    return this.veiculoService.createVeiculo(veiculo, id);
+  @Get('/:id')
+  getVeiculoById(@Param('id', ParseIntPipe) id: number): Promise<Veiculo> {
+    return this.veiculoService.getVeiculoById(id);
+  }
+
+  @Get('/cpf-cnpj/:documento')
+  getVeiculoByDocumento(@Param('documento') documento: string): Promise<Veiculo[]> {
+    return this.veiculoService.getVeiculoByDocumento(documento);
   }
 
   @Put()

@@ -3,86 +3,127 @@ import {
   HttpStatus,
   Injectable,
   InternalServerErrorException,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository } from 'typeorm';
 import { Veiculo } from '../entities/veiculo.entity';
-import { ContratoService } from '../../contrato/service/contrato.service';
 
 @Injectable()
 export class VeiculoService {
+  private readonly logger = new Logger(VeiculoService.name);
   constructor(
     @InjectRepository(Veiculo)
-    private veiculoRepository: Repository<Veiculo>,
-    private contratoService: ContratoService,
+    private veiculoRepository: Repository<Veiculo>
   ) {}
 
   async findAll(): Promise<Veiculo[]> {
     let veiculos: Veiculo[] = [];
 
     try {
-      veiculos = await this.veiculoRepository.find();
+      veiculos = await this.veiculoRepository.find({
+        relations: { seguros: true }
+      });
     } catch (error) {
-      console.error('Error fetching vehicles:', error.message);
-      throw new InternalServerErrorException('Error fetching vehicles.');
+      this.logger.error('Erro buscando veículos:', error.message);
+      throw new InternalServerErrorException('Erro ao buscar veículos.');
     }
 
     if (veiculos.length === 0) {
-      console.log('No vehicles found.');
+      this.logger.log('Nenhum veículo encontrado.');
     }
 
     return veiculos;
   }
 
-  async createVeiculo(
-    veiculoData: Veiculo,
-    contratoId: number,
-  ): Promise<Veiculo> {
-    const contrato = await this.contratoService.getContratosById(contratoId);
-    if (!contrato) {
-      throw new NotFoundException(
-        `Contrato com id ${contratoId} não encontrado`,
+  async getVeiculoById(id: number): Promise<Veiculo> {
+    this.logger.log(`Buscando veículo com ID: ${id}`);
+    let veiculo: Veiculo;
+
+    try {
+      veiculo = await this.veiculoRepository.findOneOrFail({ 
+        where: { id }, 
+        relations: { seguros: true } 
+      });
+
+      this.logger.log(`Veículo com ID: ${id} encontrado.`);
+      return veiculo;
+    } catch (error) {
+      this.logger.error(`Erro ao buscar veículo com ID ${id}:`, error.message);
+      throw new InternalServerErrorException(
+        'Erro ao buscar veículo por ID.',
       );
     }
+  }
 
-    const anoFabricacao = new Date(veiculoData.data_fabricacao).getFullYear();
-    const idadeVeiculo = new Date().getFullYear() - anoFabricacao;
+  async getVeiculoByDocumento(documento: string): Promise<Veiculo[]> {
+    this.logger.log(`Buscando veículo com documento: ${documento}`);
+    let veiculo: Veiculo[];
 
-    if (idadeVeiculo > 10) {
-      veiculoData.valor_fipe = Number(
-        (veiculoData.valor_fipe * 0.8).toFixed(2),
+    try {
+      veiculo = await this.veiculoRepository.find({
+        where: { cpf_cnpj: documento }, 
+        relations: { seguros: true } 
+      });
+
+      this.logger.log(`Veículo com documento: ${documento} encontrado.`);
+      return veiculo;
+    } catch (error) {
+      this.logger.error(`Erro ao buscar veículo com documento ${documento}:`, error.message);
+      throw new InternalServerErrorException(
+        'Erro ao buscar veículo por documento.',
       );
     }
+  }
 
-    veiculoData.contrato = contrato;
+  async createVeiculo(veiculoData: Veiculo): Promise<Veiculo> {
+    this.logger.log('Criando um novo veículo.');
 
-    const veiculo = this.veiculoRepository.create(veiculoData);
-    return await this.veiculoRepository.save(veiculo);
+    let veiculo: Veiculo;
+    try {
+      veiculo = this.veiculoRepository.create(veiculoData);
+
+      const veiculoSalvo = await this.veiculoRepository.save(veiculo);
+
+      this.logger.log(`Veículo criado com ID: ${veiculoSalvo.id}`);
+      return veiculoSalvo;
+    } catch (error) {
+      this.logger.error('Erro ao criar veículo:', error.message);
+      throw new InternalServerErrorException('Erro ao criar veículo.');
+    }
   }
 
   async update(veiculo: Veiculo): Promise<Veiculo> {
+    this.logger.log(`Atualizando veículo com ID: ${veiculo.id}`);
     let buscaVeiculo = await this.veiculoRepository.findOne({ where: { id: veiculo.id } });
 
-    if (!buscaVeiculo || !veiculo.id)
+    if (!buscaVeiculo || !veiculo.id) {
+      this.logger.error(`Veículo com ID: ${veiculo.id} não encontrado para atualização.`);
       throw new HttpException('Veículo não encontrado!', HttpStatus.NOT_FOUND);
+    }
 
-    return await this.veiculoRepository.save(veiculo);
+    const veiculoAtualizado = await this.veiculoRepository.save(veiculo);
+
+    this.logger.log(`Veículo com ID: ${veiculo.id} atualizado com sucesso.`);
+    return veiculoAtualizado;
   }
 
   async delete(id: number): Promise<DeleteResult> {
-    console.log(`Veiculo com ID ${id}, excluido.`);
+    this.logger.log(`Excluindo veículo com ID: ${id}`);
 
     try {
-      const veiculo = await this.veiculoRepository.findOne({ where: { id } });
+      await this.getVeiculoById(id);
       const result = await this.veiculoRepository.delete(id);
 
+      this.logger.log(`Veículo com ID: ${id} excluído com sucesso.`);
       return result;
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
       }
-      console.error(`Erro ao excluir veículo com ID ${id}: ${error.message}.`);
+      
+      this.logger.error(`Erro ao excluir veículo com ID ${id}: ${error.message}.`);
       throw new InternalServerErrorException('Erro ao excluir veiculo.');
     }
   }
