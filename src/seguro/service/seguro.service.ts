@@ -69,9 +69,11 @@ export class SeguroService {
       contratos = await this.seguroRepository.find({
         relations: { veiculo: true },
       });
+
+      this.logger.log(`Contratos encontrados: ${contratos.length}`);
     } catch (error) {
-      console.error('Error fetching contracts:', error.message);
-      throw new InternalServerErrorException('Error fetching contracts.');
+      this.logger.error('Erro ao buscar contratos', error.stack);
+      throw new InternalServerErrorException('Erro ao buscar contratos.');
     }
 
     if (contratos.length === 0) {
@@ -84,12 +86,19 @@ export class SeguroService {
   async getSegurosById(id: number): Promise<Seguro> {
     this.logger.log(`Buscando seguro com ID: ${id}`);
 
-    let seguro: Seguro;
+    let seguro: Seguro | null = null;
     try {
-      seguro = await this.seguroRepository.findOneOrFail({
+      seguro = await this.seguroRepository.findOne({
         where: { id },
         relations: { veiculo: true },
       });
+
+      if (!seguro) {
+        this.logger.error(`Seguro com ID: ${id} não encontrado.`);
+        throw new NotFoundException(`Seguro com ID ${id} não encontrado.`);
+      }
+
+      this.logger.log(`Seguro encontrado: ID ${seguro.id}`);
       return seguro;
     } catch (error) {
       this.logger.error(`Erro ao buscar seguro com ID: ${id}`, error.stack);
@@ -108,6 +117,8 @@ export class SeguroService {
         where: { status: ILike(`%${status}%`) },
         relations: { veiculo: true },
       });
+
+      this.logger.log(`Seguros encontrados com status: ${seguros.length}`);
       return seguros;
     } catch (error) {
       this.logger.error(`Erro ao buscar seguros com status: ${status}`, error.stack);
@@ -126,6 +137,8 @@ export class SeguroService {
         where: { cobertura: ILike(`%${tipo}%`) },
         relations: { veiculo: true },
       });
+
+      this.logger.log(`Seguros encontrados com cobertura: ${seguros.length}`);
       return seguros;
     } catch (error) {
       this.logger.error(`Erro ao buscar seguros com cobertura: ${tipo}`, error.stack);
@@ -144,6 +157,8 @@ export class SeguroService {
         where: { veiculo: { id: veiculoId } },
         relations: { veiculo: true },
       });
+
+      this.logger.log(`Seguros encontrados para veiculo ID ${veiculoId}: ${seguros.length}`);
       return seguros;
     } catch (error) {
       this.logger.error(`Erro ao buscar seguros para veiculo ID: ${veiculoId}`, error.stack);
@@ -154,22 +169,34 @@ export class SeguroService {
   }
 
   async update(seguro: Seguro): Promise<Seguro> {
-    let buscaSeguro = await this.getSegurosById(seguro.id);
+    this.logger.log(`Atualizando seguro com ID: ${seguro.id}`);
 
-    if (!buscaSeguro || !seguro.id)
-      throw new HttpException('Seguro não encontrado!', HttpStatus.NOT_FOUND);
+    try {
+      await this.getSegurosById(seguro.id);
+      this.validarSeguro(seguro);
+      seguro = await this.calcularValorSeguro(seguro, seguro.veiculo.id, this.DESCONTO_PERCENTUAL);
 
-    return await this.seguroRepository.save(seguro);
+      const seguroAtualizado = await this.seguroRepository.save(seguro);
+      this.logger.log(`Seguro atualizado: ID ${seguroAtualizado.id}`);
+      return seguroAtualizado;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+
+      this.logger.error(`Erro ao atualizar seguro com ID: ${seguro.id}`, error.stack);
+      throw new InternalServerErrorException('Erro ao atualizar seguro.');
+    }
   }
 
   async delete(id: number): Promise<DeleteResult> {
-    console.log(`Seguro com ID ${id}, excluido.`);
-
+    this.logger.log(`Excluindo seguro com ID: ${id}`);
     try {
       await this.getSegurosById(id);
 
       const result = await this.seguroRepository.delete(id);
 
+      this.logger.log(`Seguro excluído: ID ${id}`);
       return result;
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -182,9 +209,11 @@ export class SeguroService {
   }
 
   async calcularValorSeguro(seguro: Seguro, id: number, percentual: number): Promise<Seguro> {
+    this.logger.log(`Calculando valor do seguro para veiculo ID: ${id}`);
     const veiculo = await this.veiculoService.getVeiculoById(id);
 
     if (!veiculo) {
+      this.logger.error(`Veiculo com id ${id} não encontrado`);
       throw new NotFoundException(`Veiculo com id ${id} não encontrado`);
     }
 
@@ -211,11 +240,14 @@ export class SeguroService {
   }
 
   validarSeguro(seguro: Seguro): void {
+    this.logger.log(`Validando seguro com ID: ${seguro.id}`);
     if (!seguro.veiculo || !seguro.veiculo.id) {
+      this.logger.error('Veículo é obrigatório.');
       throw new HttpException('Veículo é obrigatório.', HttpStatus.BAD_REQUEST);
     }
 
     if (seguro.cobertura == null) {
+      this.logger.error('Cobertura é obrigatória.');
       throw new HttpException('Cobertura é obrigatória.', HttpStatus.BAD_REQUEST);
     }
 
@@ -223,6 +255,7 @@ export class SeguroService {
     const idade = new Date().getFullYear() - dataNascimento.getFullYear();
 
     if (idade < 18) {
+      this.logger.error('O segurado deve ser maior de 18 anos.');
       throw new HttpException('O segurado deve ser maior de 18 anos.', HttpStatus.BAD_REQUEST);
     }
   }
