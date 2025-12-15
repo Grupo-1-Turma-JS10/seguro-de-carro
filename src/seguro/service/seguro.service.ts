@@ -61,6 +61,10 @@ export class SeguroService {
       this.logger.log(`Seguro criado com ID: ${seguroSalvo.id}`);
       return seguroSalvo;
     } catch (error) {
+      if (error instanceof HttpException || error instanceof NotFoundException) {
+        throw error;
+      }
+      
       this.logger.error(`Erro ao criar seguro`, error.stack);
       throw new InternalServerErrorException('Erro ao criar seguro.');
     }
@@ -213,7 +217,7 @@ export class SeguroService {
   }
 
   async calcularValorSeguro(seguro: Seguro, id: number, percentual: number): Promise<Seguro> {
-    this.logger.log(`Calculando valor do seguro para veiculo ID: ${id}`);
+    this.logger.log(`Calculando valor do seguro para veiculo com ID: ${id}`);
     const veiculo = await this.veiculoService.getVeiculoById(id);
 
     if (!veiculo) {
@@ -221,15 +225,23 @@ export class SeguroService {
       throw new NotFoundException(`Veiculo com id ${id} não encontrado`);
     }
 
-    const anoAtual = new Date().getFullYear();
-    const idadeVeiculo = anoAtual - veiculo.ano;
-    let desconto: number = 0;
-
     // Determina o valor base do seguro
     if (!seguro.valor) {
       this.logger.log(`Calculando valor do seguro base para cobertura: ${seguro.cobertura}`);
-      seguro.valor = this.VALOR_SEGURO_POR_COBERTURA[seguro.cobertura.toLowerCase()] || 2000;
+      if (this.VALOR_SEGURO_POR_COBERTURA[seguro.cobertura.toLowerCase()]) {
+        seguro.valor = this.VALOR_SEGURO_POR_COBERTURA[seguro.cobertura.toLowerCase()];
+      } else {
+        this.logger.error(`Cobertura inválida: ${seguro.cobertura}`);
+        throw new HttpException(
+          `Cobertura inválida. Opções válidas: ${Object.keys(this.VALOR_SEGURO_POR_COBERTURA).join(', ')}`, 
+          HttpStatus.BAD_REQUEST
+        );
+      }
     }
+
+    const anoAtual = new Date().getFullYear();
+    const idadeVeiculo = anoAtual - veiculo.ano;
+    let desconto: number = 0;
 
     // Aplica desconto se o veículo tiver mais de 10 anos
     if (idadeVeiculo > 10) {
@@ -244,7 +256,7 @@ export class SeguroService {
   }
 
   validarSeguro(seguro: Seguro): void {
-    this.logger.log(`Validando seguro com ID: ${seguro.id}`);
+    this.logger.log(`Validando seguro.`);
     if (!seguro.veiculo || !seguro.veiculo.id) {
       this.logger.error('Veículo é obrigatório.');
       throw new HttpException('Veículo é obrigatório.', HttpStatus.BAD_REQUEST);
