@@ -201,4 +201,18 @@ curl -X DELETE http://localhost:3000/seguro/1
 ## Contato
 - Mantenha este README atualizado com instruções do seu ambiente local (variáveis de ambiente, versão do MySQL etc.).
 
+## Squad
 
+| Nome | Função |
+|------|--------|
+| Eduardo Pagel | Dev. |
+| Daniel Ribeiro | Dev. |
+| Joselaine Bechaire | Dev. |
+| Marcos Vinicius | Tester |
+| Michael Sales | Dev. |
+| Gabriela Lima | P.O. |
+| Juliana Matsuda | Dev. |
+
+---
+
+**Desenvolvido com ❤️ pelo Grupo 1 - Turma JS10**
