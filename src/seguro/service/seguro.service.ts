@@ -224,18 +224,21 @@ export class SeguroService {
       
       const veiculoJaAdicionado = seguro.veiculos.some(v => v.id === veiculoId);
       if (!veiculoJaAdicionado) {
+        // Garantir que seguro.valor é um número
+        const valorSeguro = Number(seguro.valor);
+        
         // Aplicar desconto de 20% se o veículo tiver mais de 10 anos
         if (idadeVeiculo > 10) {
-          const desconto = seguro.valor * 0.20;
-          const valorComDesconto = seguro.valor - desconto;
+          const desconto = valorSeguro * 0.20;
+          const valorComDesconto = valorSeguro - desconto;
           
-          this.logger.log(`Aplicando desconto de 20% ao seguro. Valor original: ${seguro.valor}, Desconto: ${desconto}, Novo valor: ${valorComDesconto}`);
+          this.logger.log(`Aplicando desconto de 20% ao seguro. Valor original: ${valorSeguro}, Desconto: ${desconto}, Novo valor: ${valorComDesconto}`);
           
           veiculo.valor_final_seguro = Number(valorComDesconto.toFixed(2));
           veiculo.desconto = Number(desconto.toFixed(2));
         } else {
           // Sem desconto para veículos com 10 anos ou menos
-          veiculo.valor_final_seguro = Number(seguro.valor.toFixed(2));
+          veiculo.valor_final_seguro = Number(valorSeguro.toFixed(2));
           veiculo.desconto = 0;
         }
         
