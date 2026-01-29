@@ -60,6 +60,10 @@ export class Veiculo {
     @Column({ length: 15, nullable: false, unique: true })
     placa: string;
 
+    @IsNotEmpty({ message: "A plataforma não pode estar vazia." })
+    @Column({ length: 100, nullable: false })
+    plataforma: string;
+
     @CreateDateColumn()
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     data_criacao: Date;

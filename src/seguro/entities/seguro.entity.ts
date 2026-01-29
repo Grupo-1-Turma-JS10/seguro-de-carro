@@ -35,7 +35,7 @@ export class Seguro {
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
     data_atualizacao: Date;
 
-    @ManyToOne(() => Veiculo, veiculo => veiculo.seguros)
+    @ManyToOne(() => Veiculo, veiculo => veiculo.seguros, { onDelete: "SET NULL", nullable: true })
     veiculo: Veiculo;
 }
 
