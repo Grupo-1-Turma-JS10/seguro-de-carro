@@ -224,8 +224,6 @@ export class SeguroService {
       
       const veiculoJaAdicionado = seguro.veiculos.some(v => v.id === veiculoId);
       if (!veiculoJaAdicionado) {
-        seguro.veiculos.push(veiculo);
-        
         // Aplicar desconto de 20% se o veículo tiver mais de 10 anos
         if (idadeVeiculo > 10) {
           const desconto = seguro.valor * 0.20;
@@ -235,13 +233,27 @@ export class SeguroService {
           
           veiculo.valor_final_seguro = Number(valorComDesconto.toFixed(2));
           veiculo.desconto = Number(desconto.toFixed(2));
+        } else {
+          // Sem desconto para veículos com 10 anos ou menos
+          veiculo.valor_final_seguro = Number(seguro.valor.toFixed(2));
+          veiculo.desconto = 0;
         }
         
+        // Salvar o veículo com os valores de seguro atualizados
+        await this.veiculoService.update(veiculo);
+        
+        // Recarregar o veículo com os dados salvos
+        const veiculoAtualizado = await this.veiculoService.getVeiculoById(veiculoId);
+        
+        // Adicionar o veículo atualizado ao seguro e salvar
+        seguro.veiculos.push(veiculoAtualizado);
         await this.seguroRepository.save(seguro);
       }
 
+      // Retornar o seguro com a relação carregada
+      const seguroFinal = await this.getSegurosById(seguroId);
       this.logger.log(`Veículo ID ${veiculoId} adicionado ao seguro ID ${seguroId}`);
-      return seguro;
+      return seguroFinal;
     } catch (error) {
       if (error instanceof NotFoundException || error instanceof HttpException) {
         throw error;
