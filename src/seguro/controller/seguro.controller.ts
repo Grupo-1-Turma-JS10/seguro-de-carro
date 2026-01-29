@@ -59,4 +59,21 @@ export class SeguroController {
   async delete(@Param('id', ParseIntPipe) id: number) {
     await this.seguroService.delete(id);
   }
+
+  @Post('/:seguroId/veiculo/:veiculoId')
+  async adicionarVeiculoAoSeguro(
+    @Param('seguroId', ParseIntPipe) seguroId: number,
+    @Param('veiculoId', ParseIntPipe) veiculoId: number
+  ): Promise<Seguro> {
+    return this.seguroService.adicionarVeiculoAoSeguro(seguroId, veiculoId);
+  }
+
+  @Delete('/:seguroId/veiculo/:veiculoId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async removerVeiculoDoSeguro(
+    @Param('seguroId', ParseIntPipe) seguroId: number,
+    @Param('veiculoId', ParseIntPipe) veiculoId: number
+  ) {
+    await this.seguroService.removerVeiculoDoSeguro(seguroId, veiculoId);
+  }
 }

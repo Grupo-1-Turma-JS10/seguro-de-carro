@@ -143,4 +143,28 @@ export class VeiculoService {
       throw new InternalServerErrorException('Erro ao excluir veiculo.');
     }
   }
+
+  async createVeiculoComSeguro(veiculo: Veiculo, seguroIds?: number[]): Promise<{ veiculo: Veiculo; seguroIds?: number[] }> {
+    this.logger.log('Criando veículo e vinculando a seguros (categorias).');
+
+    try {
+      // 1. Criar o veículo
+      const veiculoCriado = await this.createVeiculo(veiculo);
+      this.logger.log(`Veículo criado com ID: ${veiculoCriado.id}`);
+
+      // 2. Se seguroIds foram informados, vincular os seguros
+      if (seguroIds && seguroIds.length > 0) {
+        veiculoCriado.seguros = [];
+        for (const seguroId of seguroIds) {
+          // Este vínculo será feito através da rota de adição no controller de seguro
+          this.logger.log(`Seguro ID ${seguroId} será vinculado ao veículo ID ${veiculoCriado.id}`);
+        }
+      }
+
+      return { veiculo: veiculoCriado, seguroIds };
+    } catch (error) {
+      this.logger.error(`Erro ao criar veículo com seguro: ${error.message}.`);
+      throw error;
+    }
+  }
 }

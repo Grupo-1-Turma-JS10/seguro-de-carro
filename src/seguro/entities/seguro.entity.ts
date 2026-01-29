@@ -3,7 +3,7 @@ import {
     PrimaryGeneratedColumn, 
     Column, CreateDateColumn, 
     UpdateDateColumn, 
-    ManyToOne 
+    ManyToMany 
 } from "typeorm";
 import { Veiculo } from "../../veiculo/entities/veiculo.entity";
 import { IsNotEmpty } from "class-validator";
@@ -27,6 +27,10 @@ export class Seguro {
     @Column({ length: 100, nullable: false })
     cobertura: string;
 
+    @IsNotEmpty({ message: "A franquia não pode estar vazia." })
+    @Column("decimal", { precision: 10, scale: 2 })
+    franquia: number;
+
     @CreateDateColumn()
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     data_criacao: Date;
@@ -35,7 +39,7 @@ export class Seguro {
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
     data_atualizacao: Date;
 
-    @ManyToOne(() => Veiculo, veiculo => veiculo.seguros, { onDelete: "SET NULL", nullable: true })
-    veiculo: Veiculo;
+    @ManyToMany(() => Veiculo, veiculo => veiculo.seguros)
+    veiculos: Veiculo[];
 }
 
