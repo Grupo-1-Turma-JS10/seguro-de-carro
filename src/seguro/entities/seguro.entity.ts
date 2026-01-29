@@ -36,7 +36,7 @@ export class Seguro {
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
     data_atualizacao: Date;
 
-    @ManyToMany(() => Veiculo, veiculo => veiculo.seguros)
+    @ManyToMany(() => Veiculo, veiculo => veiculo.seguros, { onDelete: "CASCADE" })
     veiculos: Veiculo[];
 }
 
