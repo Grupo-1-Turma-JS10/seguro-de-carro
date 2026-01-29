@@ -212,6 +212,11 @@ export class SeguroService {
       const seguro = await this.getSegurosById(seguroId);
       const veiculo = await this.veiculoService.getVeiculoById(veiculoId);
 
+      // Calcular idade do veículo
+      const anoAtual = new Date().getFullYear();
+      const idadeVeiculo = anoAtual - veiculo.ano;
+      this.logger.log(`Veículo ID ${veiculoId} tem ${idadeVeiculo} anos`);
+
       // Evitar duplicatas
       if (!seguro.veiculos) {
         seguro.veiculos = [];
@@ -220,6 +225,18 @@ export class SeguroService {
       const veiculoJaAdicionado = seguro.veiculos.some(v => v.id === veiculoId);
       if (!veiculoJaAdicionado) {
         seguro.veiculos.push(veiculo);
+        
+        // Aplicar desconto de 20% se o veículo tiver mais de 10 anos
+        if (idadeVeiculo > 10) {
+          const desconto = seguro.valor * 0.20;
+          const valorComDesconto = seguro.valor - desconto;
+          
+          this.logger.log(`Aplicando desconto de 20% ao seguro. Valor original: ${seguro.valor}, Desconto: ${desconto}, Novo valor: ${valorComDesconto}`);
+          
+          seguro.valor = Number(valorComDesconto.toFixed(2));
+          seguro.desconto = Number(desconto.toFixed(2));
+        }
+        
         await this.seguroRepository.save(seguro);
       }
 
