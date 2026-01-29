@@ -13,6 +13,7 @@ import {
     UpdateDateColumn 
 } from "typeorm";
 import { Seguro } from "../../seguro/entities/seguro.entity";
+import { Optional } from "@nestjs/common";
 
 @Entity({ name: "tb_veiculos" })
 export class Veiculo {
@@ -64,6 +65,14 @@ export class Veiculo {
     @IsNotEmpty({ message: "A plataforma não pode estar vazia." })
     @Column({ length: 100, nullable: false })
     plataforma: string;
+
+    @Optional()
+    @Column("decimal", { precision: 10, scale: 2, nullable: true })
+    valor_final_seguro?: number;
+
+    @Optional()
+    @Column("decimal", { precision: 10, scale: 2, nullable: true })
+    desconto?: number;
 
     @CreateDateColumn()
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })

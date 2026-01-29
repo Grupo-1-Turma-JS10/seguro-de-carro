@@ -17,9 +17,6 @@ export class Seguro {
     @Column("decimal", { precision: 10, scale: 2 })
     valor: number;
 
-    @Column("decimal", { precision: 10, scale: 2 })
-    desconto: number;
-
     @Column({ length: 50, nullable: false })
     status: string;
 

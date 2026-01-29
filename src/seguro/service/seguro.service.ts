@@ -233,8 +233,8 @@ export class SeguroService {
           
           this.logger.log(`Aplicando desconto de 20% ao seguro. Valor original: ${seguro.valor}, Desconto: ${desconto}, Novo valor: ${valorComDesconto}`);
           
-          seguro.valor = Number(valorComDesconto.toFixed(2));
-          seguro.desconto = Number(desconto.toFixed(2));
+          veiculo.valor_final_seguro = Number(valorComDesconto.toFixed(2));
+          veiculo.desconto = Number(desconto.toFixed(2));
         }
         
         await this.seguroRepository.save(seguro);
