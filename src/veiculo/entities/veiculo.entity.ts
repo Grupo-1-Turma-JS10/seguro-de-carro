@@ -7,7 +7,8 @@ import {
     Column, 
     CreateDateColumn, 
     Entity, 
-    OneToMany, 
+    ManyToMany, 
+    JoinTable,
     PrimaryGeneratedColumn, 
     UpdateDateColumn 
 } from "typeorm";
@@ -72,6 +73,7 @@ export class Veiculo {
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
     data_atualizacao: Date;
 
-    @OneToMany(() => Seguro, seguro => seguro.veiculo)
+    @ManyToMany(() => Seguro, seguro => seguro.veiculos, { cascade: true })
+    @JoinTable({ name: 'tb_veiculo_seguro' })
     seguros: Seguro[];
 }
